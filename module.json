@@ -1,16 +1,12 @@
 {
   "id": "frozen-dice",
-  "name": "frozen-dice",
   "title": "Frozen Dice",
   "description": "Adds a button to execute Constitution saves for all characters",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "author": "Tobias",
-  "esmodules": ["frozen-dice.js"],
   "url": "https://github.com/tobias/frozen-dice",
   "manifest": "https://raw.githubusercontent.com/tobias/frozen-dice/main/module.json",
-  "minimumCoreVersion": "11.0.0",
-  "compatibleCoreVersion": "12.0.0",
-  "socket": false,
-  "languages": [],
-  "dependencies": []
+  "minimumCoreVersion": "11",
+  "compatibleCoreVersion": "12",
+  "esmodules": ["frozen-dice.js"]
 }
