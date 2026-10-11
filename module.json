@@ -1,4 +1,5 @@
 {
+  "id": "frozen-dice",
   "name": "frozen-dice",
   "title": "Frozen Dice",
   "description": "Adds a button to execute Constitution saves for all characters",
