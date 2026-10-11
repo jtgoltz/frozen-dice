@@ -194,17 +194,17 @@ async function rollConSaveForAllCharacters() {
  * Hook to add button to scene controls
  */
 function addConSaveButton() {
-  Hooks.on('getSceneControlButtons', (controls) => {
+  Hooks.on('renderSceneControls', (app, html) => {
     const isGM = game.user?.isGM || false;
     
-    console.log(`${MOD_ID} | getSceneControlButtons called, GM=${isGM}, controls count=${controls.length}`);
+    console.log(`${MOD_ID} | renderSceneControls called, GM=${isGM}`);
     
-    // Add to the first control group (usually "token")
-    if (controls.length > 0) {
-      const groupName = controls[0].name;
-      const toolsBefore = controls[0].tools.length;
+    // Add to token controls
+    const tokenControl = app.controlSets.find(c => c.name === 'token');
+    if (tokenControl) {
+      const toolsBefore = tokenControl.tools.length;
       
-      controls[0].tools.push({
+      tokenControl.tools.push({
         name: 'frozen-dice-con-save',
         title: 'Con Save All',
         icon: 'fas fa-shield-virus',
@@ -213,9 +213,10 @@ function addConSaveButton() {
         button: true
       });
       
-      console.log(`${MOD_ID} | Added Con Save button to group "${groupName}", tools count: ${toolsBefore} -> ${controls[0].tools.length}`);
+      console.log(`${MOD_ID} | Added Con Save button to token controls, tools: ${toolsBefore} -> ${tokenControl.tools.length}`);
+      app.render();
     } else {
-      console.warn(`${MOD_ID} | No control groups found to add button to`);
+      console.warn(`${MOD_ID} | No token control group found`);
     }
   });
 }
