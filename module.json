@@ -8,5 +8,6 @@
   "manifest": "https://raw.githubusercontent.com/jtgoltz/frozen-dice/refs/heads/main/module.json",
   "minimumCoreVersion": "11",
   "compatibleCoreVersion": "12",
-  "esmodules": ["frozen-dice.js"]
+  "esmodules": ["frozen-dice.js"],
+  "download": "https://github.com/jtgoltz/frozen-dice/archive/refs/heads/main.zip"
 }
