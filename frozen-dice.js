@@ -1,6 +1,6 @@
 /**
  * Frozen Dice - Constitution Save Button for All Characters
- * Adds a scene control button that rolls Con saves for all player characters
+ * Adds a button to execute Constitution saves for all player characters
  */
 
 // Module namespace
@@ -22,15 +22,6 @@ function registerSettings() {
     step: 1
   });
 
-  game.settings.register(MOD_ID, 'showButtonToPlayers', {
-    name: 'Show Button to Players',
-    hint: 'If enabled, all players see the button (only GM can click it)',
-    scope: 'world',
-    config: true,
-    type: Boolean,
-    default: false
-  });
-
   game.settings.register(MOD_ID, 'includeNPCs', {
     name: 'Include NPCs',
     hint: 'Also roll saves for NPCs owned by the GM',
@@ -48,12 +39,11 @@ function addStyles() {
   const style = document.createElement('style');
   style.id = `${MOD_ID}-styles`;
   style.textContent = `
-    #frozen-dice-con-save {
+    .scene-control.frozen-dice-con-save {
       color: #2e8b57 !important;
     }
-    #frozen-dice-con-save:hover {
+    .scene-control.frozen-dice-con-save:hover {
       color: #3cb371 !important;
-      transform: scale(1.1);
     }
   `;
   document.head.appendChild(style);
@@ -191,33 +181,40 @@ async function rollConSaveForAllCharacters() {
 }
 
 /**
- * Hook to add button to scene controls
+ * Add button to scene controls using the standard Foundry API
  */
 function addConSaveButton() {
-  Hooks.on('renderSceneControls', (app, html) => {
-    const isGM = game.user?.isGM || false;
-    
-    console.log(`${MOD_ID} | renderSceneControls called, GM=${isGM}`);
-    
-    // Add to token controls
-    const tokenControl = app.controlSets.find(c => c.name === 'token');
-    if (tokenControl) {
-      const toolsBefore = tokenControl.tools.length;
+  Hooks.once('ready', () => {
+    // Wait a bit for UI to fully initialize
+    setTimeout(() => {
+      const controls = canvas.sceneControls;
+      if (!controls) {
+        console.warn(`${MOD_ID} | Scene controls not available`);
+        return;
+      }
       
-      tokenControl.tools.push({
-        name: 'frozen-dice-con-save',
-        title: 'Con Save All',
-        icon: 'fas fa-shield-virus',
-        visible: isGM,
-        onClick: rollConSaveForAllCharacters,
-        button: true
-      });
+      console.log(`${MOD_ID} | Scene controls found, adding button`);
       
-      console.log(`${MOD_ID} | Added Con Save button to token controls, tools: ${toolsBefore} -> ${tokenControl.tools.length}`);
-      app.render();
-    } else {
-      console.warn(`${MOD_ID} | No token control group found`);
-    }
+      // Add to token control set
+      const tokenControl = controls.controlSets.find(c => c.name === 'token');
+      if (tokenControl) {
+        const isGM = game.user.isGM;
+        
+        tokenControl.tools.push({
+          name: 'frozen-dice-con-save',
+          title: 'Con Save All',
+          icon: 'fas fa-shield-virus',
+          visible: isGM,
+          onClick: rollConSaveForAllCharacters,
+          button: true
+        });
+        
+        console.log(`${MOD_ID} | Added Con Save button to token controls`);
+        controls.render();
+      } else {
+        console.warn(`${MOD_ID} | Token control set not found`);
+      }
+    }, 1000);
   });
 }
 
@@ -228,12 +225,12 @@ function addConSaveButton() {
 Hooks.once('init', () => {
   console.log(`${MOD_ID} | Initializing...`);
   registerSettings();
-  addConSaveButton();
 });
 
 Hooks.once('ready', () => {
   console.log(`${MOD_ID} | Ready`);
   addStyles();
+  addConSaveButton();
   
   // Add keybind
   game.keybindings.register(MOD_ID, 'conSaveAll', {
@@ -250,11 +247,4 @@ Hooks.once('ready', () => {
     restricted: true,
     precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL
   });
-});
-
-Hooks.once('setup', () => {
-  // Optional: Register socket if you need server-client communication
-  // if (game.socket) {
-  //   game.socket.on(`module.${MOD_ID}`, handleSocketMessage);
-  // }
 });
