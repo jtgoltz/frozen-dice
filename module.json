@@ -2,7 +2,7 @@
   "id": "frozen-dice",
   "title": "Frozen Dice",
   "description": "Adds a button to execute Constitution saves for all characters",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "author": "Tobias",
   "url": "https://github.com/tobias/frozen-dice",
   "manifest": "https://raw.githubusercontent.com/jtgoltz/frozen-dice/refs/heads/main/module.json",

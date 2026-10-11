@@ -195,17 +195,28 @@ async function rollConSaveForAllCharacters() {
  */
 function addConSaveButton() {
   Hooks.on('getSceneControlButtons', (controls) => {
-    const showToPlayers = game.settings.get(MOD_ID, 'showButtonToPlayers');
+    const isGM = game.user?.isGM || false;
     
-    controls.push({
-      name: 'frozen-dice-con-save',
-      title: 'Con Save All',
-      icon: 'fas fa-shield-virus',  // Shield with virus (con save theme)
-      visible: showToPlayers || game.user.isGM,
-      layer: 'controls',
-      onClick: rollConSaveForAllCharacters,
-      button: true
-    });
+    console.log(`${MOD_ID} | getSceneControlButtons called, GM=${isGM}, controls count=${controls.length}`);
+    
+    // Add to the first control group (usually "token")
+    if (controls.length > 0) {
+      const groupName = controls[0].name;
+      const toolsBefore = controls[0].tools.length;
+      
+      controls[0].tools.push({
+        name: 'frozen-dice-con-save',
+        title: 'Con Save All',
+        icon: 'fas fa-shield-virus',
+        visible: isGM,
+        onClick: rollConSaveForAllCharacters,
+        button: true
+      });
+      
+      console.log(`${MOD_ID} | Added Con Save button to group "${groupName}", tools count: ${toolsBefore} -> ${controls[0].tools.length}`);
+    } else {
+      console.warn(`${MOD_ID} | No control groups found to add button to`);
+    }
   });
 }
 
@@ -216,12 +227,12 @@ function addConSaveButton() {
 Hooks.once('init', () => {
   console.log(`${MOD_ID} | Initializing...`);
   registerSettings();
+  addConSaveButton();
 });
 
 Hooks.once('ready', () => {
   console.log(`${MOD_ID} | Ready`);
   addStyles();
-  addConSaveButton();
   
   // Add keybind
   game.keybindings.register(MOD_ID, 'conSaveAll', {
